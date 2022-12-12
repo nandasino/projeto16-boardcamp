@@ -14,9 +14,34 @@ export async function postCustomer(req,res){
 }
 
 export async function getCustomers(req,res){
+    const {cpf} = req.query;
+
     try{
-        const customers = await db.query("SELECT * FROM customers;");
+        if(cpf){
+            const filter = await db.query(`
+            SELECT 
+            id, name, phone, cpf, TO_CHAR(birthday,'yyyy-mm-dd') AS birthday
+            FROM 
+            customers WHERE cpf LIKE $1;`,
+            [`%${cpf}%`]);
+            return res.send(filter.rows);
+        }
+        const customers = await db.query("SELECT id, name, phone, cpf, TO_CHAR(birthday,'yyyy-mm-dd') AS birthday FROM customers;");
         return res.send(customers.rows);
+    }catch(error){
+        res.sendStatus(500);
+    }
+}
+
+export async function getCustomersById(req,res){
+    const { id } = req.params;
+
+    try{
+        const filterById = await db.query(`SELECT * FROM customers WHERE id = $1;`,[id]);
+        if(filterById.rowCount == 0){
+            return sessionStorage.sendStatus(404);
+        }
+        res.send(filterById.rows);
     }catch(error){
         res.sendStatus(500);
     }
