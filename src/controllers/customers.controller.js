@@ -12,3 +12,12 @@ export async function postCustomer(req,res){
         res.sendStatus(500);
     }
 }
+
+export async function getCustomers(req,res){
+    try{
+        const customers = await db.query("SELECT * FROM customers;");
+        return res.send(customers.rows);
+    }catch(error){
+        res.sendStatus(500);
+    }
+}
