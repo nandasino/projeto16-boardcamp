@@ -14,7 +14,21 @@ export async function postGame(req,res){
 }
 
 export async function getGames(req,res){
+    const {name} = req.query;
     try{
+        if(name){
+            const filter = await db.query(`
+            SELECT 
+            games.*,
+            categories.name as "categoryName"
+            FROM 
+            games JOIN categories 
+            ON 
+            games."categoryId" = categories.id
+            WHERE LOWER (games.name) LIKE $1;`,
+            [`%${name.toLowerCase()}%`]);
+            return res.send(filter.rows);
+        }
         const games = await db.query(`
         SELECT 
         games.*,

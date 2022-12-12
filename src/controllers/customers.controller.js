@@ -26,7 +26,10 @@ export async function getCustomers(req,res){
             [`%${cpf}%`]);
             return res.send(filter.rows);
         }
-        const customers = await db.query("SELECT id, name, phone, cpf, TO_CHAR(birthday,'yyyy-mm-dd') AS birthday FROM customers;");
+        const customers = await db.query(`
+        SELECT 
+        id, name, phone, cpf, TO_CHAR(birthday,'yyyy-mm-dd') AS birthday 
+        FROM customers;`);
         return res.send(customers.rows);
     }catch(error){
         res.sendStatus(500);
