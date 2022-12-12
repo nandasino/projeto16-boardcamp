@@ -14,6 +14,6 @@ export async function createCustomerValidation(req, res, next){
         return res.sendStatus(409);
     }
 
-    res.locals.client = { name, phone, cpf, birthday };
+    res.locals.customer = { name, phone, cpf, birthday };
     next();
 }

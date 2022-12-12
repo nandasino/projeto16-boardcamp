@@ -1,7 +1,7 @@
 import { db } from '../db.js';
 
 export async function postCustomer(req,res){
-    const { name, phone, cpf, birthday } = res.locals.client;
+    const { name, phone, cpf, birthday } = res.locals.customer;
     try{
         await db.query(
         `INSERT INTO customers (name, phone, cpf, birthday) 

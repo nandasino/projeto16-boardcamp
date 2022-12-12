@@ -12,7 +12,7 @@ export async function createGameValidation(req, res, next){
 
     const categoryExists = await db.query("SELECT * FROM categories WHERE id = $1;", [categoryId]);
     
-    if (categoryExists.rowCount = 0){
+    if (categoryExists.rowCount == 0){
         return res.sendStatus(400);
     }
 
