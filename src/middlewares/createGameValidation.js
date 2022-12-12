@@ -21,6 +21,6 @@ export async function createGameValidation(req, res, next){
     if (nameExists.rowCount > 0){
         return res.sendStatus(409);
     }
-
+    res.locals.game = {name, image, stockTotal, categoryId, pricePerDay};
     next();
 }
