@@ -44,7 +44,7 @@ export async function getCustomersById(req,res){
         if(filterById.rowCount == 0){
             return sessionStorage.sendStatus(404);
         }
-        res.send(filterById.rows);
+        res.send(filterById.rows[0]);
     }catch(error){
         res.sendStatus(500);
     }
