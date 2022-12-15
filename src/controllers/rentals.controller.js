@@ -34,8 +34,8 @@ export async function getRentals(req,res){
       const rentalsByCustomer = await db.query(`
       SELECT 
       rentals.id, rentals."customerId" , rentals."gameId",
-      TO_CHAR(rentals."rentDate",'yyyy-mm-dd'), rentals."daysRented", 
-      rentals."returnDate", rentals."originalPrice", rentals."delayFee",
+      TO_CHAR(rentals."rentDate",'yyyy-mm-dd') AS "rentDate", rentals."daysRented", 
+      TO_CHAR(rentals."returnDate",'yyyy-mm-dd') AS "returnDate", rentals."originalPrice", rentals."delayFee",
       json_build_object(
       'id', customers.id,
       'name', customers.name) 
@@ -59,8 +59,8 @@ export async function getRentals(req,res){
       const rentalsByGame = await db.query(`
       SELECT 
       rentals.id, rentals."customerId" , rentals."gameId",
-      TO_CHAR(rentals."rentDate",'yyyy-mm-dd'), rentals."daysRented", 
-      rentals."returnDate", rentals."originalPrice", rentals."delayFee",
+      TO_CHAR(rentals."rentDate",'yyyy-mm-dd') AS "rentDate", rentals."daysRented", 
+      TO_CHAR(rentals."returnDate",'yyyy-mm-dd') AS "returnDate", rentals."originalPrice", rentals."delayFee",
       json_build_object(
       'id', customers.id,
       'name', customers.name) 
@@ -82,8 +82,8 @@ export async function getRentals(req,res){
     const rentals = await db.query(`
       SELECT 
       rentals.id, rentals."customerId" , rentals."gameId",
-      TO_CHAR(rentals."rentDate",'yyyy-mm-dd'), rentals."daysRented", 
-      rentals."returnDate", rentals."originalPrice", rentals."delayFee",
+      TO_CHAR(rentals."rentDate",'yyyy-mm-dd') AS "rentDate", rentals."daysRented", 
+      TO_CHAR(rentals."returnDate",'yyyy-mm-dd') AS "returnDate", rentals."originalPrice", rentals."delayFee",
       json_build_object(
       'id', customers.id,
       'name', customers.name) 
@@ -100,6 +100,45 @@ export async function getRentals(req,res){
       JOIN categories ON games."categoryId" = categories.id; 
     `)
     res.send(rentals.rows);
+  }catch(error){
+    res.sendStatus(500);
+  }
+}
+
+export async function closeRentals(req,res){
+  const {id} = req.params;
+  try{
+    const rentExists = await db.query(`SELECT * FROM rentals WHERE id = $1;`,[id]);
+  
+    if(rentExists.rowCount == 0){
+      return res.sendStatus(404);
+    }
+    const rentSearched = rentExists.rows[0];
+    const returnDate = rentSearched.returnDate;
+    const rentDate = rentSearched.rentDate;
+
+    if(returnDate != null){
+      return res.sendStatus(400);
+    }
+
+    const differenceOfDays = dayjs().diff(rentDate, "day");
+    console.log(differenceOfDays);
+    const daysRented = rentSearched.daysRented;
+    const originalPrice = rentSearched.originalPrice;
+    const pricePerDay = originalPrice/daysRented;
+    let delayFee = 0;
+
+    if(differenceOfDays > daysRented){
+      delayFee = differenceOfDays * pricePerDay;
+    }
+    console.log("chegou aqui");
+    await db.query(`
+    UPDATE rentals 
+    SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3`,
+    [dayjs().format("YYYY-MM-DD"), delayFee, id]);
+
+    res.sendStatus(201);
+
   }catch(error){
     res.sendStatus(500);
   }
