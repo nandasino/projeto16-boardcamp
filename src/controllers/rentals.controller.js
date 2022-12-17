@@ -122,7 +122,6 @@ export async function closeRentals(req,res){
     }
 
     const differenceOfDays = dayjs().diff(rentDate, "day");
-    console.log(differenceOfDays);
     const daysRented = rentSearched.daysRented;
     const originalPrice = rentSearched.originalPrice;
     const pricePerDay = originalPrice/daysRented;
@@ -131,7 +130,6 @@ export async function closeRentals(req,res){
     if(differenceOfDays > daysRented){
       delayFee = differenceOfDays * pricePerDay;
     }
-    console.log("chegou aqui");
     await db.query(`
     UPDATE rentals 
     SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3`,

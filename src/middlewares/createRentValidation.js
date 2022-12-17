@@ -31,7 +31,6 @@ export async function createRentValidation(req, res, next){
 
     if (gameToRent.stockTotal == gamesRented.length){
         return res.sendStatus(400);
-        console.log("jogo sem estoque");
     }
 
     res.locals.rent = { customerId, gameId, daysRented };

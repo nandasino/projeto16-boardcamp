@@ -6,5 +6,5 @@ const router = Router();
 
 router.post("/rentals", createRentValidation, postRent);
 router.get("/rentals", getRentals);
-router.put("/rentals/:id/return", closeRentals);
+router.post("/rentals/:id/return", closeRentals);
 export default router;
