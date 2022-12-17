@@ -141,3 +141,28 @@ export async function closeRentals(req,res){
     res.sendStatus(500);
   }
 }
+
+export async function deleteRent(req,res){
+  const { id } = req.params;
+
+  try{
+
+    const rentExists = await db.query(`SELECT * FROM rentals WHERE id = $1;`, [id]);
+
+    if(rentExists.rowCount == 0){
+      return res.sendStatus(404);
+    }
+
+    const rentSearched = rentExists.rows[0];
+
+    if(rentSearched.returnDate == null){
+      return res.sendStatus(400);
+    }
+
+    await db.query(`DELETE FROM rentals WHERE id = $1;`,[id]);
+    res.send(200);
+    
+  }catch(error){
+    res.sendStatus(500);
+  }
+}
